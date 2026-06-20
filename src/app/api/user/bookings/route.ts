@@ -14,7 +14,6 @@ export async function GET() {
 
     await connectDB();
 
-    // Find the user profile and extract only the booking history tracking logs
     const userProfile = await User.findById((session.user as any).id)
       .select('bookingHistory')
       .lean();

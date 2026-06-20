@@ -13,8 +13,7 @@ export async function GET() {
     }
 
     await connectDB();
-    
-    // Find the user and automatically populate the full package documents from the 'TravelPlan' collection
+
     const userWithWishlist = await User.findById((session.user as any).id)
       .select('wishlist')
       .populate('wishlist')
