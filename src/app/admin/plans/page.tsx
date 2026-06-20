@@ -347,400 +347,482 @@ export default function AdminPlansPage() {
         [k]: e.target.value
       }));
 
-  return (
-    <div className="space-y-6 max-w-7xl relative px-4 md:px-0">
-      
-      {/* ── MODERN MINIMALIST DARK ALERT MODAL ── */}
-      <AnimatePresence>
-        {deleteModal.isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setDeleteModal(prev => ({ ...prev, isOpen: false }))}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative z-10 text-slate-100"
-            >
-              <div className="flex gap-4 items-start">
-                <div className="p-3 bg-amber-500/10 text-amber-500 rounded-xl shrink-0">
-                  <AlertTriangle className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold font-display tracking-tight text-white mb-1">Deactivate Package</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">
-                    Are you sure you want to deactivate <span className="text-slate-200 font-semibold">"{deleteModal.planTitle}"</span>? This package will be hidden from public discovery feeds.
-                  </p>
-                </div>
+
+return (
+  <div className="space-y-5 w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 overflow-x-hidden">
+
+    {/* MODAL */}
+    <AnimatePresence>
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() =>
+              setDeleteModal(prev => ({ ...prev, isOpen: false }))
+            }
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            className="relative z-10 w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6 shadow-2xl"
+          >
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 rounded-xl bg-amber-500/10 p-3 text-amber-500">
+                <AlertTriangle className="h-6 w-6" />
               </div>
-              <div className="flex justify-end gap-3 mt-6 pt-2 border-t border-slate-800/60">
-                <button
-                  type="button"
-                  onClick={() => setDeleteModal(prev => ({ ...prev, isOpen: false }))}
-                  className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-xl transition-colors"
-                >
-                  Keep Active
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmDeletePlan}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-500 rounded-xl shadow-lg shadow-red-600/10 transition-all"
-                >
-                  Confirm Deactivate
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-display font-bold text-xl md:text-2xl text-brand-navy">
-            Travel Plans
-          </h2>
-          <p className="text-gray-500 text-xs md:text-sm">
-            Manage all tour packages
-          </p>
-        </div>
+              <div>
+                <h3 className="mb-1 text-lg font-bold text-white">
+                  Deactivate Package
+                </h3>
 
-        <button onClick={toggleAddForm} className="btn-primary text-xs md:text-sm">
-          {showForm ? 'Cancel' : '+ Add Plan'}
-        </button>
-      </div>
-
-      {showForm && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-card p-4 md:p-6"
-        >
-          <h3 className="font-display font-semibold text-brand-navy mb-5">
-            {editingId ? 'Edit Plan Details' : 'Create New Plan'}
-          </h3>
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              ['title', 'Title *', 'text'],
-              ['destination', 'Destination *', 'text'],
-              ['country', 'Country *', 'text'],
-              ['region', 'Region *', 'text'],
-              ['price', 'Price (₹) *', 'number'],
-              ['discountedPrice', 'Discounted Price', 'number'],
-              ['durationDays', 'Days *', 'number'],
-              ['durationNights', 'Nights *', 'number'],
-              ['maxGroupSize', 'Max Group Size', 'number'],
-              ['departureFrom', 'Departure From *', 'text']
-            ].map(([k, label, type]) => (
-              <div key={k} className="w-full">
-                <label className="block text-xs font-medium text-gray-600 mb-1">
-                  {label}
-                </label>
-                <input
-                  type={type}
-                  required={label.includes('*')}
-                  value={form[k as keyof typeof form] as string}
-                  onChange={setF(k)}
-                  className={inputCls}
-                />
-              </div>
-            ))}
-
-            {/* Choose File Dropzone */}
-            <div className="md:col-span-2 w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-2.5">
-                Package Cover Image *
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center p-4 bg-gray-50 border border-gray-200 rounded-2xl">
-                
-                <div className="sm:col-span-2 relative group flex flex-col items-center justify-center h-36 border-2 border-dashed border-gray-300 hover:border-brand-blue/60 bg-white rounded-xl transition-all overflow-hidden">
-                  <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer px-4 text-center">
-                    <div className="p-2 bg-gray-100 text-gray-500 group-hover:text-brand-blue group-hover:bg-brand-blue/10 rounded-xl transition-all mb-1.5">
-                      <UploadCloud className="w-5 h-5" />
-                    </div>
-                    <span className="text-xs md:text-sm font-medium text-gray-700 group-hover:text-brand-blue transition-colors">
-                      {uploadingImage ? "Processing media..." : "Click or drag to upload"}
-                    </span>
-                    <span className="text-[11px] text-gray-400 mt-0.5">PNG, JPG, or WebP up to 10MB</span>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleFileChange} 
-                      className="hidden" 
-                      required={!form.coverImage}
-                    />
-                  </label>
-                </div>
-
-                <div className="h-36 w-full flex items-center justify-center bg-white border border-gray-200 rounded-xl overflow-hidden relative shadow-sm">
-                  {form.coverImage ? (
-                    <img 
-                      src={form.coverImage} 
-                      alt="Media preview" 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center text-gray-400 gap-1">
-                      <ImageIcon className="w-5 h-5 stroke-[1.5]" />
-                      <span className="text-xs font-medium">Preview Area</span>
-                    </div>
-                  )}
-                </div>
-
+                <p className="text-sm leading-relaxed text-slate-400">
+                  Are you sure you want to deactivate{" "}
+                  <span className="font-semibold text-slate-200">
+                    "{deleteModal.planTitle}"
+                  </span>
+                  ?
+                </p>
               </div>
             </div>
 
-            <div className="md:col-span-2 w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Short Description *
-              </label>
-              <input
-                required
-                value={form.shortDescription}
-                onChange={setF('shortDescription')}
-                className={inputCls}
-                maxLength={200}
-              />
-            </div>
-
-            <div className="md:col-span-2 w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Full Description *
-              </label>
-              <textarea
-                required
-                rows={4}
-                value={form.description}
-                onChange={setF('description')}
-                className={inputCls}
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-              <select value={form.category} onChange={setF('category')} className={inputCls}>
-                {['adventure','beach','cultural','honeymoon','family','wildlife','pilgrimage','cruise'].map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Difficulty</label>
-              <select value={form.difficulty} onChange={setF('difficulty')} className={inputCls}>
-                {['easy','moderate','challenging'].map(d => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Tags Section */}
-            <div className="w-full">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Tags (comma separated)</label>
-              <input 
-                value={form.tags} 
-                onChange={setF('tags')} 
-                placeholder="kashmir, beach, luxury" 
-                className={inputCls} 
-              />
-            </div>
-
-            {/* Trending & Featured Toggles */}
-            <div className="flex flex-wrap items-center gap-4 md:gap-6 py-2 select-none">
-              <label className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-700 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={form.isTrending} 
-                  onChange={e => setForm(p => ({ ...p, isTrending: e.target.checked }))} 
-                  className="w-4 h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue/20 accent-brand-blue" 
-                /> 
-                Trending Package
-              </label>
-              <label className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-700 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={form.isFeatured} 
-                  onChange={e => setForm(p => ({ ...p, isFeatured: e.target.checked }))} 
-                  className="w-4 h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue/20 accent-brand-blue" 
-                /> 
-                Featured Package
-              </label>
-            </div>
-
-            <div className="md:col-span-2 flex gap-3 pt-2 w-full">
+            <div className="mt-6 flex flex-col gap-3 border-t border-slate-800 pt-4 sm:flex-row sm:justify-end">
               <button
-                type="submit"
-                disabled={saving || uploadingImage}
-                className="btn-primary disabled:opacity-60 text-xs md:text-sm"
+                type="button"
+                onClick={() =>
+                  setDeleteModal(prev => ({ ...prev, isOpen: false }))
+                }
+                className="rounded-xl px-4 py-2 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
               >
-                {saving
-                  ? 'Saving...'
-                  : editingId
-                  ? 'Update Plan'
-                  : 'Create Plan'}
+                Cancel
               </button>
 
               <button
                 type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingId(null);
-                  setEditingSlug(null);
-                  setSelectedImage(null);
-                  setForm(initialFormState);
-                }}
-                className="btn-secondary text-xs md:text-sm"
+                onClick={confirmDeletePlan}
+                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
               >
-                Cancel
+                Confirm
               </button>
             </div>
-          </form>
-        </motion.div>
-      )}
-
-      {/* SEARCH */}
-      <div className="bg-white rounded-xl border border-gray-200 flex items-center gap-2 px-4 py-2.5 shadow-sm">
-        <Search className="w-4 h-4 text-gray-400" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search plans..."
-          className="flex-1 bg-transparent text-sm focus:outline-none"
-        />
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                {[
-                  'Package',
-                  'Destination',
-                  'Duration',
-                  'Price',
-                  'Status',
-                  'Rating',
-                  'Actions'
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left py-3 px-4 text-gray-500 font-medium text-xs uppercase whitespace-nowrap"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} className="border-b border-gray-50">
-                    <td colSpan={7} className="py-4 px-4">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse" />
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                plans.map((plan) => {
-                  const currentPrice =
-                    typeof plan.price === 'object' && plan.price !== null
-                      ? plan.price.amount
-                      : plan.price;
-
-                  return (
-                    <tr
-                      key={plan._id}
-                      className="border-b border-gray-50 hover:bg-gray-50"
-                    >
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-brand-navy line-clamp-1 max-w-48">
-                          {plan.title}
-                        </div>
-                      </td>
-
-                      <td className="py-3 px-4 text-gray-600 text-xs">
-                        {plan.destination}
-                      </td>
-
-                      <td className="py-3 px-4 text-gray-600 text-xs whitespace-nowrap">
-                        {getDurationLabel(
-                          plan.duration?.days || 0,
-                          plan.duration?.nights || 0
-                        )}
-                      </td>
-
-                      <td className="py-3 px-4 text-xs whitespace-nowrap">
-                        <p className="font-semibold text-brand-navy">
-                          {formatPrice(plan.discountedPrice ?? currentPrice)}
-                        </p>
-                      </td>
-
-                      <td className="py-3 px-4">
-                        <span
-                          className={`badge text-xs ${
-                            plan.isActive
-                              ? 'bg-green-50 text-green-600'
-                              : 'bg-red-50 text-red-500'
-                          }`}
-                        >
-                          {plan.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-4">
-                        <span className="flex items-center gap-1 text-xs">
-                          <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                          {Number(plan.rating || 0).toFixed(1)}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/plan/${plan.slug}`}
-                            target="_blank"
-                            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-brand-blue transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Link>
-
-                          <button
-                            type="button"
-                            onClick={() => startEdit(plan)}
-                            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-brand-blue transition-colors"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setDeleteModal({ isOpen: true, planSlug: plan.slug, planTitle: plan.title })}
-                            className="p-1.5 hover:bg-red-50 rounded-lg text-gray-500 hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-
-          {!loading && plans.length === 0 && (
-            <p className="text-center py-10 text-gray-400">No plans found</p>
-          )}
+          </motion.div>
         </div>
+      )}
+    </AnimatePresence>
+
+    {/* HEADER */}
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+      <div>
+        <h2 className="font-display text-2xl font-bold text-brand-navy">
+          Travel Plans
+        </h2>
+
+        <p className="mt-1 text-sm text-gray-500">
+          Manage all tour packages
+        </p>
       </div>
+
+      <button
+        onClick={toggleAddForm}
+        className="btn-primary h-11 px-5 text-sm font-medium rounded-xl w-fit min-w-[140px] self-start"
+      >
+        {showForm ? 'Cancel' : '+ Add Plan'}
+      </button>
     </div>
-  );
+
+    {/* FORM */}
+    {showForm && (
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-white p-4 sm:p-6 shadow-card"
+      >
+        <h3 className="mb-5 font-display text-lg font-semibold text-brand-navy">
+          {editingId ? 'Edit Plan Details' : 'Create New Plan'}
+        </h3>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 gap-4 md:grid-cols-2"
+        >
+
+          {[
+            ['title', 'Title *', 'text'],
+            ['destination', 'Destination *', 'text'],
+            ['country', 'Country *', 'text'],
+            ['region', 'Region *', 'text'],
+            ['price', 'Price (₹) *', 'number'],
+            ['discountedPrice', 'Discounted Price', 'number'],
+            ['durationDays', 'Days *', 'number'],
+            ['durationNights', 'Nights *', 'number'],
+            ['maxGroupSize', 'Max Group Size', 'number'],
+            ['departureFrom', 'Departure From *', 'text']
+          ].map(([k, label, type]) => (
+            <div key={k} className="min-w-0">
+              <label className="mb-1.5 block text-xs font-medium text-gray-600">
+                {label}
+              </label>
+
+              <input
+                type={type}
+                required={label.includes('*')}
+                value={form[k as keyof typeof form] as string}
+                onChange={setF(k)}
+                className={inputCls}
+              />
+            </div>
+          ))}
+
+          {/* IMAGE */}
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-xs font-medium text-gray-600">
+              Package Cover Image *
+            </label>
+
+            <div className="grid grid-cols-1 gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-3 sm:p-4 lg:grid-cols-3">
+
+              <div className="lg:col-span-2">
+                <label className="group flex h-40 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-white px-4 text-center transition hover:border-brand-blue/60">
+
+                  <div className="mb-2 rounded-xl bg-gray-100 p-2 text-gray-500 transition group-hover:bg-brand-blue/10 group-hover:text-brand-blue">
+                    <UploadCloud className="h-5 w-5" />
+                  </div>
+
+                  <span className="text-sm font-medium text-gray-700 transition group-hover:text-brand-blue">
+                    {uploadingImage
+                      ? "Processing media..."
+                      : "Click to upload image"}
+                  </span>
+
+                  <span className="mt-1 text-[11px] text-gray-400">
+                    PNG, JPG or WEBP
+                  </span>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    required={!form.coverImage}
+                  />
+                </label>
+              </div>
+
+              <div className="flex h-40 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                {form.coverImage ? (
+                  <img
+                    src={form.coverImage}
+                    alt="preview"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-1 text-gray-400">
+                    <ImageIcon className="h-5 w-5" />
+                    <span className="text-xs">Preview</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* DESCRIPTION */}
+          <div className="md:col-span-2">
+            <label className="mb-1.5 block text-xs font-medium text-gray-600">
+              Short Description *
+            </label>
+
+            <input
+              required
+              value={form.shortDescription}
+              onChange={setF('shortDescription')}
+              className={inputCls}
+              maxLength={200}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="mb-1.5 block text-xs font-medium text-gray-600">
+              Full Description *
+            </label>
+
+            <textarea
+              required
+              rows={4}
+              value={form.description}
+              onChange={setF('description')}
+              className={inputCls}
+            />
+          </div>
+
+          {/* BUTTONS */}
+          <div className="md:col-span-2 flex flex-col gap-3 pt-2 sm:flex-row">
+
+            <button
+              type="submit"
+              disabled={saving || uploadingImage}
+              className="btn-primary rounded-xl px-5 py-2.5 text-sm disabled:opacity-60 w-full sm:w-auto"
+            >
+              {saving
+                ? 'Saving...'
+                : editingId
+                ? 'Update Plan'
+                : 'Create Plan'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setEditingId(null);
+                setEditingSlug(null);
+                setSelectedImage(null);
+                setForm(initialFormState);
+              }}
+              className="btn-secondary rounded-xl px-5 py-2.5 text-sm w-full sm:w-auto"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    )}
+
+    {/* SEARCH */}
+    <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+      <Search className="h-4 w-4 shrink-0 text-gray-400" />
+
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search plans..."
+        className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+      />
+    </div>
+
+    {/* TABLE */}
+    <div className="overflow-hidden rounded-2xl bg-white shadow-card">
+
+      {/* MOBILE CARDS */}
+      <div className="block md:hidden space-y-3 p-3">
+        {plans.map((plan) => {
+          const currentPrice =
+            typeof plan.price === 'object' && plan.price !== null
+              ? plan.price.amount
+              : plan.price;
+
+          return (
+            <div
+              key={plan._id}
+              className="rounded-2xl border border-gray-100 p-4 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="truncate font-semibold text-brand-navy">
+                    {plan.title}
+                  </h3>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    {plan.destination}
+                  </p>
+                </div>
+
+                <span
+                  className={`badge text-xs ${
+                    plan.isActive
+                      ? 'bg-green-50 text-green-600'
+                      : 'bg-red-50 text-red-500'
+                  }`}
+                >
+                  {plan.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-400">Price</p>
+
+                  <p className="font-semibold text-brand-navy">
+                    {formatPrice(plan.discountedPrice ?? currentPrice)}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-1 text-sm">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  {Number(plan.rating || 0).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+
+                <Link
+                  href={`/plan/${plan.slug}`}
+                  target="_blank"
+                  className="flex-1 rounded-xl border border-gray-200 py-2 text-center text-sm text-gray-600 transition hover:bg-gray-50"
+                >
+                  View
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => startEdit(plan)}
+                  className="rounded-xl border border-gray-200 p-2.5 text-gray-600 transition hover:bg-gray-50"
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDeleteModal({
+                      isOpen: true,
+                      planSlug: plan.slug,
+                      planTitle: plan.title
+                    })
+                  }
+                  className="rounded-xl border border-red-100 p-2.5 text-red-500 transition hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* DESKTOP TABLE */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+
+          <thead className="border-b border-gray-200 bg-gray-50">
+            <tr>
+              {[
+                'Package',
+                'Destination',
+                'Duration',
+                'Price',
+                'Status',
+                'Rating',
+                'Actions'
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase text-gray-500"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {plans.map((plan) => {
+              const currentPrice =
+                typeof plan.price === 'object' && plan.price !== null
+                  ? plan.price.amount
+                  : plan.price;
+
+              return (
+                <tr
+                  key={plan._id}
+                  className="border-b border-gray-50 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3">
+                    <div className="max-w-52 truncate font-medium text-brand-navy">
+                      {plan.title}
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-3 text-xs text-gray-600">
+                    {plan.destination}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-600">
+                    {getDurationLabel(
+                      plan.duration?.days || 0,
+                      plan.duration?.nights || 0
+                    )}
+                  </td>
+
+                  <td className="whitespace-nowrap px-4 py-3">
+                    <p className="font-semibold text-brand-navy">
+                      {formatPrice(plan.discountedPrice ?? currentPrice)}
+                    </p>
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <span
+                      className={`badge text-xs ${
+                        plan.isActive
+                          ? 'bg-green-50 text-green-600'
+                          : 'bg-red-50 text-red-500'
+                      }`}
+                    >
+                      {plan.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <span className="flex items-center gap-1 text-xs">
+                      <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                      {Number(plan.rating || 0).toFixed(1)}
+                    </span>
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+
+                      <Link
+                        href={`/plan/${plan.slug}`}
+                        target="_blank"
+                        className="rounded-lg p-1.5 text-gray-500 transition hover:bg-gray-100 hover:text-brand-blue"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => startEdit(plan)}
+                        className="rounded-lg p-1.5 text-gray-500 transition hover:bg-gray-100 hover:text-brand-blue"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDeleteModal({
+                            isOpen: true,
+                            planSlug: plan.slug,
+                            planTitle: plan.title
+                          })
+                        }
+                        className="rounded-lg p-1.5 text-gray-500 transition hover:bg-red-50 hover:text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {!loading && plans.length === 0 && (
+        <p className="py-10 text-center text-gray-400">
+          No plans found
+        </p>
+      )}
+    </div>
+  </div>
+);
+
 }
