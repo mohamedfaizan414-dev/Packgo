@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { InteractionService } from '@/core/services/InteractionService';
+import { NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import User from '@/models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-const interactionService = new InteractionService();
-
+// GET: Fetch the logged-in traveler's entire booking pipeline history logs
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -12,9 +12,20 @@ export async function GET() {
       return NextResponse.json({ error: 'Authentication Required' }, { status: 401 });
     }
 
-    const bookings = await interactionService.getUserBookings((session.user as any).id);
-    return NextResponse.json(bookings, { status: 200 });
+    await connectDB();
+
+    // Find the user profile and extract only the booking history tracking logs
+    const userProfile = await User.findById((session.user as any).id)
+      .select('bookingHistory')
+      .lean();
+
+    if (!userProfile) {
+      return NextResponse.json({ error: 'Traveler profile instance not found' }, { status: 404 });
+    }
+
+    // Return the array or an empty array fallback if they haven't made bookings yet
+    return NextResponse.json(userProfile.bookingHistory || [], { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error.message || 'Failed to retrieve booking records' }, { status: 400 });
   }
 }
