@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
+// @ts-ignore
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import SessionProvider from '@/components/layout/SessionProvider';
