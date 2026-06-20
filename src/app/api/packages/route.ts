@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import TravelPlan from '@/models/TravelPlan';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // GET: Fetch all active packages with their metrics safely mapping to valid arrays
 export async function GET(request: NextRequest) {

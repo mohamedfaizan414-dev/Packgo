@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/db';
 import TravelPlan from '@/models/TravelPlan';
 import Itinerary from '@/models/Itinerary';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {

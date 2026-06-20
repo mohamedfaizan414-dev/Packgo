@@ -5,8 +5,7 @@ import { getServerSession } from 'next-auth';
 import mongoose from 'mongoose';
 import { revalidatePath } from 'next/cache';
 
-// ✅ Define options locally or import them from a separate clean configuration wrapper if preferred
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 

@@ -4,7 +4,7 @@ import TravelPlan from '@/models/TravelPlan';
 import User from '@/models/User';
 import Enquiry from '@/models/Enquiry';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 export async function GET() {
   try {
